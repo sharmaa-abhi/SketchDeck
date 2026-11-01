@@ -27,3 +27,22 @@
 @media (max-width: 920px) { .sidebar { flex-basis: 210px; }.dashboard-content { padding-inline: 30px; }.template-grid { grid-template-columns: repeat(2, 1fr); }.property-panel { display: none; }.canvas-wrap .excalidraw { height: calc(100svh - 110px); } }
 @media (max-width: 620px) { .sidebar { display: none; }.topbar { height: 62px; padding: 0 16px; }.mobile-brand { display: block; }.mobile-brand .brand-name { font-size: 17px; }.dashboard-content { padding: 38px 18px 55px; }.welcome-row { align-items: flex-start; flex-direction: column; }.welcome-row .primary-button { width: 100%; }.quick-start { margin-top: 42px; }.template-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }.template-preview { height: 100px; }.template-card-footer { padding: 9px; }.recent-section { margin-top: 42px; }.recent-heading { align-items: flex-start; flex-direction: column; }.list-actions { width: 100%; }.search-field { flex: 1; }.drawing-count { display: none; }.editor-header { padding: 0 9px; }.editor-header-left .back-button span, .editor-header-left .header-divider, .editor-header-left .brand, .desktop-only, .editor-action span { display: none; }.title-editor { margin-left: 8px; }.title-editor input { width: 115px; }.save-status { font-size: 0; }.save-status svg { width: 13px; }.editor-header-right .icon-button { border: 0; }.export-button { padding: 8px; font-size: 0; }.export-button svg { width: 16px; }.editor-toolbar { top: auto; right: 10px; bottom: 15px; left: 10px; flex-direction: row; justify-content: center; padding: 5px; }.toolbar-divider { width: 1px; height: 22px; margin: auto 3px; }.tool-button { width: 31px; height: 31px; }.editor-footer { display: none; }.canvas-wrap .excalidraw { height: calc(100svh - 62px); }.modal-template-grid { grid-template-columns: repeat(2, 1fr); }.template-modal, .shortcuts-modal { padding: 20px; }.modal-template .template-preview { height: 85px; } }
 @media (min-width: 621px) { .mobile-brand { display: none; } }
+
+/* Editor controls stay out of the canvas until the user opens the popup. */
+.editor-shell .editor-body { min-height: 0; }
+.editor-shell .canvas-wrap .excalidraw { height: calc(100svh - 62px); }
+.canvas-menu-toggle { position: fixed; right: 18px; bottom: 18px; z-index: 8; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--panel); box-shadow: 0 10px 28px rgba(30,50,80,.16); }
+.canvas-menu-toggle:hover { color: var(--blue); border-color: #b7c5f7; background: var(--blue-wash); }
+.canvas-menu { position: fixed; right: 18px; bottom: 70px; z-index: 8; width: min(270px, calc(100vw - 36px)); max-height: calc(100svh - 88px); overflow: auto; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); box-shadow: 0 18px 48px rgba(30,50,80,.2); }
+.canvas-menu-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font: 600 12px 'Space Grotesk'; }
+.canvas-menu-header .icon-button { width: 27px; height: 27px; border: 0; }
+.canvas-menu .editor-toolbar { position: static; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 0 0 12px; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.canvas-menu .toolbar-divider { display: none; }
+.canvas-menu .tool-button { width: 38px; height: 38px; }
+.canvas-menu-section { padding-top: 12px; border-top: 1px solid var(--line); }
+.canvas-menu .property-panel-header { margin-bottom: 22px; }
+.canvas-menu .inspector-empty { padding: 0 8px; }
+.canvas-menu .tips-card { margin-top: 24px; }
+.canvas-menu-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--subtle); font: 10px 'DM Mono'; }
+.canvas-menu-footer > span { display: flex; align-items: center; gap: 6px; }
+.canvas-menu-footer .import-button { margin-left: auto; color: var(--blue); }
