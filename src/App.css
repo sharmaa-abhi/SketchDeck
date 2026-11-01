@@ -65,3 +65,73 @@
   .editor-footer { display: none; }
   .editor-shell .canvas-wrap .excalidraw { height: calc(100svh - 62px); }
 }
+
+/* Blueprint command-center theme. */
+.editor-shell {
+  --ink: #d7e5f4;
+  --muted: #8294a8;
+  --subtle: #526579;
+  --line: #263545;
+  --panel: #101923;
+  --blue: #20b8f5;
+  --blue-dark: #087ba9;
+  --blue-wash: #102b3c;
+  --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100svh - 40px);
+  margin: 20px 26px;
+  border: 6px solid #8793a1;
+  border-radius: 24px;
+  outline: 1px solid #394858;
+  color: var(--ink);
+  background: #0a1017;
+  box-shadow: 0 0 0 2px #c0c8d0, 0 22px 70px rgba(0, 0, 0, .38);
+  font-family: 'DM Mono', monospace;
+}
+.editor-shell .editor-header {
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid #263747;
+  background: #0c151f;
+  color: #a9bfd2;
+  font-size: 9px;
+}
+.editor-shell .editor-header-left,
+.editor-shell .editor-header-right { gap: 8px; }
+.editor-shell .back-button { padding: 4px 5px; color: #7e9ab0; font: 9px 'DM Mono'; }
+.editor-shell .back-button svg { width: 13px; }
+.editor-shell .header-divider { height: 15px; margin: 0 5px; background: #263747; }
+.editor-shell .brand-name { color: #d7e5f4; font: 700 11px 'DM Mono'; letter-spacing: 0; }
+.editor-shell .brand-mark { width: 20px; height: 20px; padding: 3px; border-radius: 3px; background: #087ba9; transform: none; }
+.editor-shell .title-editor { margin-left: 10px; }
+.editor-shell .title-editor input { width: 235px; color: #d7e5f4; font: 700 9px 'DM Mono'; letter-spacing: .3px; text-transform: uppercase; }
+.editor-shell .save-status { color: #49d9b2; font-size: 8px; }
+.editor-shell .editor-action { margin-right: 4px; color: #7e9ab0; font: 9px 'DM Mono'; }
+.editor-shell .editor-action svg { width: 13px; }
+.editor-shell .icon-button { width: 28px; height: 28px; border-color: #263747; border-radius: 4px; color: #7892a6; background: #101923; }
+.editor-shell .export-button { padding: 7px 10px; border: 1px solid #1eaff0; border-radius: 4px; color: #02111b; background: #20b8f5; font: 700 9px 'DM Mono'; box-shadow: none; }
+.editor-shell .editor-body { background: #0b121a; }
+.editor-shell .canvas-wrap { background-color: #0d141c; background-image: linear-gradient(rgba(46, 112, 145, .14) 1px, transparent 1px), linear-gradient(90deg, rgba(46, 112, 145, .14) 1px, transparent 1px); background-size: 20px 20px; }
+.editor-shell .canvas-wrap .excalidraw { background: transparent; }
+.editor-shell .editor-toolbar { top: 28px; left: 8px; gap: 2px; padding: 5px; border-color: #2b4357; border-radius: 9px; background: #111d28; box-shadow: 0 10px 24px rgba(0, 0, 0, .3); }
+.editor-shell .tool-button { width: 29px; height: 29px; border-radius: 3px; color: #91a8ba; }
+.editor-shell .tool-button:hover,
+.editor-shell .tool-button.active { color: #20b8f5; background: #102d45; }
+.editor-shell .toolbar-divider { background: #263747; }
+.editor-shell .editor-floating-toolbar { top: 16px; padding: 4px 7px; border-color: #2b4357; border-radius: 7px; background: #111d28; box-shadow: 0 10px 24px rgba(0, 0, 0, .3); }
+.editor-shell .editor-floating-toolbar .tool-button { width: 28px; height: 28px; }
+.editor-shell .canvas-help { top: 67px; color: #657f93; font-size: 8px; }
+.editor-shell .property-panel { flex-basis: 220px; padding: 14px 12px; border-left-color: #263747; background: #101923; }
+.editor-shell .property-panel-header { margin-bottom: 38px; color: #d5e5f3; font: 700 11px 'DM Mono'; text-transform: uppercase; }
+.editor-shell .inspector-empty strong { color: #d8e6f2; font: 700 10px 'DM Mono'; }
+.editor-shell .inspector-empty span { color: #7390a4; font-size: 9px; }
+.editor-shell .inspector-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 10px; border-radius: 10px; color: #20b8f5; background: #102d58; }
+.editor-shell .tips-card { margin-top: 56px; padding: 11px; border-color: #39629b; border-radius: 8px; background: #14264d; }
+.editor-shell .tips-title { color: #20b8f5; font: 700 9px 'DM Mono'; }
+.editor-shell .tips-card p { color: #9ab0c6; font-size: 9px; }
+.editor-shell .editor-footer { height: 36px; padding: 0 12px; border-top-color: #263747; color: #668196; background: #0c151f; font-size: 8px; }
+.editor-shell .editor-footer kbd { border-color: #2b4357; color: #9ab0c6; background: #101923; }
+.editor-shell .import-button { color: #7895ab; }
+.editor-shell .live-dot { width: 5px; height: 5px; background: #20d8a2; box-shadow: none; }
+.editor-shell .toast { border-color: #2b4357; border-radius: 5px; color: #b7cde0; background: #101923; font: 10px 'DM Mono'; }
