@@ -46,3 +46,22 @@
 .canvas-menu-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--subtle); font: 10px 'DM Mono'; }
 .canvas-menu-footer > span { display: flex; align-items: center; gap: 6px; }
 .canvas-menu-footer .import-button { margin-left: auto; color: var(--blue); }
+
+/* Reference editor layout: persistent tool rail, top tool strip, inspector, and status footer. */
+.editor-shell .canvas-wrap .excalidraw { height: calc(100svh - 110px); }
+.editor-floating-toolbar { position: absolute; top: 16px; left: 50%; z-index: 5; display: flex; align-items: center; gap: 2px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); box-shadow: 0 8px 24px rgba(30,50,80,.12); transform: translateX(-50%); }
+.editor-floating-toolbar .tool-button { width: 31px; height: 31px; }
+.canvas-help { position: absolute; top: 74px; left: 50%; z-index: 4; color: var(--subtle); font: 10px 'DM Mono'; transform: translateX(-50%); pointer-events: none; }
+.canvas-menu-toggle, .canvas-menu { display: none; }
+.editor-footer { display: flex; }
+
+@media (max-width: 920px) {
+  .editor-floating-toolbar { left: 52%; }
+}
+@media (max-width: 620px) {
+  .editor-floating-toolbar { top: 12px; left: 50%; max-width: calc(100vw - 80px); overflow-x: auto; justify-content: flex-start; transform: translateX(-50%); }
+  .editor-toolbar { top: auto; right: 10px; bottom: 15px; left: 10px; flex-direction: row; justify-content: center; padding: 5px; }
+  .canvas-help { display: none; }
+  .editor-footer { display: none; }
+  .editor-shell .canvas-wrap .excalidraw { height: calc(100svh - 62px); }
+}
