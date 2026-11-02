@@ -135,3 +135,152 @@
 .editor-shell .import-button { color: #7895ab; }
 .editor-shell .live-dot { width: 5px; height: 5px; background: #20d8a2; box-shadow: none; }
 .editor-shell .toast { border-color: #2b4357; border-radius: 5px; color: #b7cde0; background: #101923; font: 10px 'DM Mono'; }
+
+/* Dark technical workspace surface. */
+.app-shell[data-theme='dark'] {
+  --ink: #eaf2f8;
+  --muted: #91a0ae;
+  --subtle: #607181;
+  --line: #253340;
+  --panel: #111922;
+  --blue: #36c5ff;
+  --blue-dark: #1689c7;
+  --blue-wash: #102b3b;
+  background: #0b1117;
+}
+.app-shell[data-theme='dark'] .sidebar,
+.app-shell[data-theme='dark'] .topbar,
+.app-shell[data-theme='dark'] .template-card,
+.app-shell[data-theme='dark'] .search-field,
+.app-shell[data-theme='dark'] .icon-button {
+  background: #111922;
+}
+.app-shell[data-theme='dark'] .template-preview {
+  background: #151f29;
+}
+.app-shell[data-theme='dark'] .welcome-row h1 em {
+  color: #36c5ff;
+}
+.editor-shell {
+  min-height: 100svh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: #0b1117;
+  box-shadow: none;
+}
+.editor-shell .editor-header {
+  height: 52px;
+  padding: 0 18px;
+  border-bottom-color: #253340;
+  background: #111922;
+}
+.editor-shell .editor-body {
+  min-height: calc(100svh - 88px);
+  background: #0b1117;
+}
+.editor-shell .canvas-wrap {
+  background-color: #0b1117;
+  background-image: linear-gradient(rgba(54, 197, 255, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(54, 197, 255, .07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.editor-shell .canvas-wrap .excalidraw {
+  height: calc(100svh - 88px);
+}
+.editor-shell .editor-toolbar,
+.editor-shell .editor-floating-toolbar {
+  border-color: #253340;
+  background: #111922;
+}
+.editor-shell .editor-toolbar {
+  top: 16px;
+  left: 16px;
+}
+.editor-shell .editor-floating-toolbar {
+  top: 12px;
+}
+.editor-shell .property-panel {
+  flex-basis: 246px;
+  border-left-color: #253340;
+  background: #111922;
+}
+.editor-shell .property-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  color: #eaf2f8;
+}
+.inspector-state {
+  color: #35c98a;
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+.inspector-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+.inspector-details > strong {
+  color: #eaf2f8;
+  font-size: 11px;
+  letter-spacing: .08em;
+}
+.inspector-id {
+  color: #607181;
+  font-size: 9px;
+}
+.inspector-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 12px;
+  width: 100%;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #253340;
+}
+.inspector-grid span {
+  color: #607181;
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+.inspector-grid b {
+  color: #b9c9d6;
+  font-size: 9px;
+  font-weight: 500;
+}
+.editor-shell .editor-footer {
+  height: 36px;
+  border-top-color: #253340;
+  background: #111922;
+}
+
+@media (max-width: 760px) {
+  .sidebar { display: none; }
+  .dashboard-content { padding: 36px 20px 60px; }
+  .welcome-row { align-items: flex-start; flex-direction: column; }
+  .template-grid { grid-template-columns: repeat(2, 1fr); }
+  .topbar { height: 58px; padding: 0 18px; }
+  .editor-shell .editor-header { padding: 0 10px; }
+  .editor-shell .header-divider,
+  .editor-shell .editor-action,
+  .editor-shell .editor-header-right .icon-button { display: none; }
+  .editor-shell .title-editor { margin-left: 6px; }
+  .editor-shell .title-editor input { width: min(42vw, 170px); }
+  .editor-shell .property-panel { position: absolute; right: 0; bottom: 0; z-index: 8; width: min(246px, 86vw); height: 240px; border-top: 1px solid #253340; }
+  .editor-shell .editor-toolbar { display: none; }
+}
+
+@media (max-width: 480px) {
+  .dashboard-content { padding-inline: 16px; }
+  .template-grid { grid-template-columns: 1fr; }
+  .recent-heading { align-items: flex-start; flex-direction: column; }
+  .list-actions, .search-field { width: 100%; }
+  .drawing-count { display: none; }
+  .editor-shell .editor-floating-toolbar { max-width: calc(100vw - 24px); }
+  .editor-shell .export-button { padding: 7px; }
+  .editor-shell .export-button { font-size: 0; }
+  .editor-shell .export-button svg { margin: 0; }
+}
