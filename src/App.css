@@ -284,6 +284,31 @@
 .editor-shell.chrome-hidden .canvas-wrap .excalidraw {
   height: 100svh;
 }
+/* Keep the editor chrome above the canvas without consuming workspace height. */
+.editor-shell:not(.chrome-hidden) .editor-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  background: rgba(17, 25, 34, .94);
+  backdrop-filter: blur(10px);
+}
+.editor-shell:not(.chrome-hidden) .editor-body {
+  min-height: 100svh;
+}
+.editor-shell:not(.chrome-hidden) .canvas-wrap .excalidraw {
+  height: 100svh;
+}
+.editor-shell:not(.chrome-hidden) .editor-footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  background: rgba(17, 25, 34, .94);
+  backdrop-filter: blur(10px);
+}
 
 @media (max-width: 760px) {
   .sidebar { display: none; }
