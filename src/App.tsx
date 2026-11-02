@@ -6,29 +6,23 @@ import {
   Bell,
   Check,
   ChevronDown,
-  Circle,
   Cloud,
   Command,
   Download,
   FileImage,
   FileJson,
-  Grid3X3,
   HelpCircle,
-  Image,
   LayoutTemplate,
   List,
   Moon,
   MoreHorizontal,
-  MousePointer2,
   PenLine,
   Plus,
   Search,
   Settings2,
   Sparkles,
-  Square,
   Sun,
   Trash2,
-  Type,
   Upload,
   WandSparkles,
   X,
@@ -497,10 +491,6 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
     event.target.value = ''
   }
 
-  const setTool = (tool: string) => {
-    apiRef.current?.setActiveTool({ type: tool } as never)
-  }
-
   if (!drawing) return <div className="loading-screen"><div className="brand-mark"><span /><span /><span /></div><span>Loading your canvas…</span></div>
 
   return <div className="editor-shell" data-theme={theme}>
@@ -509,7 +499,6 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
       <div className="editor-header-right"><button className="editor-action" onClick={() => setShowShortcuts(true)}><Command size={16} /><span>Shortcuts</span></button><ThemeButton theme={theme} toggleTheme={toggleTheme} /><div className="export-wrap"><button className="primary-button export-button" onClick={() => setShowExport((value) => !value)}><Download size={16} /> Export <ChevronDown size={14} /></button>{showExport && <div className="export-menu"><button onClick={() => void exportFile('png')}><FileImage size={16} /> PNG image</button><button onClick={() => void exportFile('svg')}><FileImage size={16} /> SVG vector</button><button onClick={() => void exportFile('json')}><FileJson size={16} /> Excalidraw JSON</button></div>}</div></div>
     </header>
     <div className="editor-body">
-      <div className="editor-toolbar"><ToolButton icon={<MousePointer2 />} label="Select" onClick={() => setTool('selection')} active /><ToolButton icon={<Square />} label="Rectangle" onClick={() => setTool('rectangle')} /><ToolButton icon={<Circle />} label="Ellipse" onClick={() => setTool('ellipse')} /><ToolButton icon={<span className="diamond-icon" />} label="Diamond" onClick={() => setTool('diamond')} /><ToolButton icon={<ArrowRight />} label="Arrow" onClick={() => setTool('arrow')} /><ToolButton icon={<PenLine />} label="Draw" onClick={() => setTool('freedraw')} /><ToolButton icon={<Type />} label="Text" onClick={() => setTool('text')} /><ToolButton icon={<Image />} label="Image" onClick={() => setTool('image')} /><div className="toolbar-divider" /><ToolButton icon={<Grid3X3 />} label="Show grid" onClick={() => apiRef.current?.updateScene({ appState: { gridSize: 20 } })} /></div>
       <div className="canvas-wrap"><Excalidraw theme="dark" initialData={{ elements: drawing.elements, appState: { ...drawing.appState, theme: 'dark', viewBackgroundColor: '#0d141c' } as AppState, files: drawing.files }} excalidrawAPI={(api) => { apiRef.current = api }} onChange={(elements, appState, files) => { const selectedId = Object.keys(appState.selectedElementIds ?? {})[0]; setSelectedElement(selectedId ? (elements.find((element) => element.id === selectedId) as ExcalidrawElement | undefined) ?? null : null); persist(elements as readonly ExcalidrawElement[], appState, files) }} name="SketchDeck" UIOptions={{ canvasActions: { export: false, saveToActiveFile: false, loadScene: false, clearCanvas: true, toggleTheme: false, saveAsImage: false }, tools: { image: true } }} /></div>
       <div className="canvas-help">To move canvas, hold mouse wheel or spacebar while dragging, or use the hand tool.</div>
       <aside className="property-panel"><div className="property-panel-header"><span>Inspector</span><span className="inspector-state">{selectedElement ? 'SELECTED' : 'IDLE'}</span></div>{selectedElement ? <div className="inspector-details"><div className="inspector-icon"><WandSparkles size={18} /></div><strong>{selectedElement.type.toUpperCase()}</strong><span className="inspector-id">{selectedElement.id.slice(0, 18)}…</span><div className="inspector-grid"><span>POSITION</span><b>{Math.round(selectedElement.x)}, {Math.round(selectedElement.y)}</b><span>SIZE</span><b>{Math.round(Math.abs(selectedElement.width))} × {Math.round(Math.abs(selectedElement.height))}</b><span>OPACITY</span><b>{selectedElement.opacity}%</b></div></div> : <div className="inspector-empty"><div className="inspector-icon"><WandSparkles size={18} /></div><strong>Shape styling</strong><span>Select an object to inspect its geometry and appearance.</span></div>}<div className="tips-card"><div className="tips-title"><Sparkles size={14} /> Quick tip</div><p>Double-click any shape to add a label. Hold <kbd>Space</kbd> to pan around the canvas.</p></div></aside>
@@ -518,10 +507,6 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
     {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}
     {notice && <Toast message={notice} onClose={() => setNotice('')} />}
   </div>
-}
-
-function ToolButton({ icon, label, onClick, active = false }: { icon: React.ReactNode; label: string; onClick: () => void; active?: boolean }) {
-  return <button className={`tool-button ${active ? 'active' : ''}`} onClick={onClick} title={label} aria-label={label}>{icon}</button>
 }
 
 function ShortcutsModal({ onClose }: { onClose: () => void }) {
