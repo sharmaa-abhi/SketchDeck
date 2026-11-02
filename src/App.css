@@ -256,6 +256,34 @@
   border-top-color: #253340;
   background: #111922;
 }
+.chrome-button {
+  margin-right: 4px;
+}
+.chrome-restore {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #253340;
+  border-radius: 6px;
+  color: #91a8ba;
+  background: #111922;
+}
+.chrome-restore:hover {
+  color: #36c5ff;
+  border-color: #36c5ff;
+}
+.editor-shell.chrome-hidden .editor-body,
+.editor-shell.chrome-hidden .canvas-wrap .excalidraw {
+  min-height: 100svh;
+}
+.editor-shell.chrome-hidden .canvas-wrap .excalidraw {
+  height: 100svh;
+}
 
 @media (max-width: 760px) {
   .sidebar { display: none; }
