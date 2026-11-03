@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">SketchDeck</title>
+  <desc id="desc">A stack of sketch cards with a creative spark</desc>
+  <defs>
+    <linearGradient id="card" x1="9" y1="8" x2="53" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5578FF"/>
+      <stop offset="1" stop-color="#3154D9"/>
+    </linearGradient>
+    <linearGradient id="spark" x1="45" y1="7" x2="57" y2="22" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB36B"/>
+      <stop offset="1" stop-color="#F47746"/>
+    </linearGradient>
+  </defs>
+  <rect x="11" y="15" width="38" height="38" rx="11" transform="rotate(-9 11 15)" fill="#DCE5FF"/>
+  <rect x="14" y="12" width="38" height="38" rx="11" transform="rotate(8 14 12)" fill="#EEF2FF"/>
+  <rect x="12" y="10" width="38" height="38" rx="11" fill="url(#card)"/>
+  <path d="M22 30.5 28 36l13.5-14" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+  <path d="m51 5 1.8 5.2L58 12l-5.2 1.8L51 19l-1.8-5.2L44 12l5.2-1.8L51 5Z" fill="url(#spark)"/>
+</svg>

@@ -269,7 +269,7 @@ function App() {
 function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`brand ${compact ? 'brand-compact' : ''}`}>
-      <div className="brand-mark"><span /><span /><span /></div>
+      <img className="brand-mark" src="/logo.svg" alt="" aria-hidden="true" />
       <span className="brand-name">Sketch<span>Deck</span></span>
     </div>
   )
@@ -494,7 +494,7 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
     event.target.value = ''
   }
 
-  if (!drawing) return <div className="loading-screen"><div className="brand-mark"><span /><span /><span /></div><span>Loading your canvas…</span></div>
+  if (!drawing) return <div className="loading-screen"><img className="brand-mark" src="/logo.svg" alt="" aria-hidden="true" /><span>Loading your canvas…</span></div>
 
   return <div className={`editor-shell ${showChrome ? '' : 'chrome-hidden'}`} data-theme={theme}>
     {showChrome && <header className="editor-header">
