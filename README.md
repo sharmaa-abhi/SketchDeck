@@ -8,6 +8,7 @@ SketchDeck is a local-first visual workspace for diagrams, wireframes, mind maps
 - Blank canvas plus templates for flowcharts, mind maps, wireframes, system architecture, brainstorming, user journeys, and project planning.
 - Excalidraw infinite canvas with shapes, arrows, freehand drawing, text, images, pan, zoom, grouping, and undo/redo.
 - Automatic local persistence in IndexedDB, including drawing metadata, canvas state, and refresh recovery.
+- Duplicate and delete actions for saved drawings, with confirmation before deletion.
 - Light and dark themes saved in `localStorage`.
 - PNG, SVG, and native Excalidraw JSON export.
 - Excalidraw JSON import with in-app error feedback for invalid files.
@@ -58,7 +59,7 @@ Clearing browser site data removes locally saved drawings. Use the Excalidraw JS
 ## Current limitations
 
 - Drawings are available only in the browser profile where they were created.
-- The branded Inspector panel is currently an empty state; Excalidraw's native property controls remain available when an object is selected.
+- The branded Inspector panel reports the selected object's type, position, size, and opacity; Excalidraw's native property controls remain available for editing.
 - Import currently accepts `.json` and `.excalidraw` files in native Excalidraw format.
 
 ## Validation

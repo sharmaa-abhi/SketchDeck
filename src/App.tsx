@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Cloud,
   Command,
+  Copy,
   Download,
   Eye,
   EyeOff,
@@ -89,28 +90,45 @@ const openDatabase = () =>
 const getDrawings = async (): Promise<DrawingRecord[]> => {
   const db = await openDatabase()
   return new Promise((resolve, reject) => {
-    const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).getAll()
+    const transaction = db.transaction(STORE_NAME, 'readonly')
+    const request = transaction.objectStore(STORE_NAME).getAll()
     request.onsuccess = () =>
       resolve((request.result as DrawingRecord[]).sort((a, b) => b.updatedAt - a.updatedAt))
     request.onerror = () => reject(request.error)
+    transaction.oncomplete = () => db.close()
   })
 }
 
 const getDrawing = async (id: string) => {
   const db = await openDatabase()
   return new Promise<DrawingRecord | undefined>((resolve, reject) => {
-    const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(id)
+    const transaction = db.transaction(STORE_NAME, 'readonly')
+    const request = transaction.objectStore(STORE_NAME).get(id)
     request.onsuccess = () => resolve(request.result as DrawingRecord | undefined)
     request.onerror = () => reject(request.error)
+    transaction.oncomplete = () => db.close()
   })
 }
 
 const saveDrawing = async (drawing: DrawingRecord) => {
   const db = await openDatabase()
   return new Promise<void>((resolve, reject) => {
-    const request = db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(drawing)
+    const transaction = db.transaction(STORE_NAME, 'readwrite')
+    const request = transaction.objectStore(STORE_NAME).put(drawing)
     request.onsuccess = () => resolve()
     request.onerror = () => reject(request.error)
+    transaction.oncomplete = () => db.close()
+  })
+}
+
+const deleteDrawing = async (id: string) => {
+  const db = await openDatabase()
+  return new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, 'readwrite')
+    const request = transaction.objectStore(STORE_NAME).delete(id)
+    request.onsuccess = () => resolve()
+    request.onerror = () => reject(request.error)
+    transaction.oncomplete = () => db.close()
   })
 }
 
@@ -289,6 +307,7 @@ function Dashboard({ theme, toggleTheme, navigate }: { theme: Theme; toggleTheme
   const [activeFilter, setActiveFilter] = useState('All')
   const [showTemplates, setShowTemplates] = useState(false)
   const [notice, setNotice] = useState('')
+  const [loadedAt] = useState(() => Date.now())
 
   const refresh = useCallback(async () => {
     try {
@@ -310,8 +329,32 @@ function Dashboard({ theme, toggleTheme, navigate }: { theme: Theme; toggleTheme
     }
   }
 
-  const filteredDrawings = drawings.filter((drawing) => drawing.title.toLowerCase().includes(search.toLowerCase()))
+  const filteredDrawings = drawings
+    .filter((drawing) => drawing.title.toLowerCase().includes(search.toLowerCase()))
+    .filter((drawing) => activeFilter !== 'Recently edited' || drawing.updatedAt >= loadedAt - 7 * 24 * 60 * 60 * 1000)
   const recent = filteredDrawings.slice(0, 4)
+
+  const duplicateDrawing = async (drawing: DrawingRecord) => {
+    const duplicate = { ...drawing, id: createId(), title: `${drawing.title} copy`, updatedAt: Date.now() }
+    try {
+      await saveDrawing(duplicate)
+      setDrawings((current) => [duplicate, ...current])
+      setNotice('Drawing duplicated')
+    } catch {
+      setNotice('Unable to duplicate this drawing.')
+    }
+  }
+
+  const removeDrawing = async (drawing: DrawingRecord) => {
+    if (!window.confirm(`Delete "${drawing.title}"? This cannot be undone.`)) return
+    try {
+      await deleteDrawing(drawing.id)
+      setDrawings((current) => current.filter((item) => item.id !== drawing.id))
+      setNotice('Drawing deleted')
+    } catch {
+      setNotice('Unable to delete this drawing.')
+    }
+  }
 
   return (
     <div className="app-shell dashboard-shell" data-theme={theme}>
@@ -377,16 +420,20 @@ function Dashboard({ theme, toggleTheme, navigate }: { theme: Theme; toggleTheme
               </div>
             </div>
             <div className="filter-row">
-              {['All', 'Recently edited', 'Shared with me'].map((filter) => <button key={filter} className={activeFilter === filter ? 'filter active' : 'filter'} onClick={() => setActiveFilter(filter)}>{filter}</button>)}
+              {['All', 'Recently edited'].map((filter) => <button key={filter} className={activeFilter === filter ? 'filter active' : 'filter'} onClick={() => setActiveFilter(filter)}>{filter}</button>)}
             </div>
             {recent.length > 0 ? (
               <div className="drawing-list">
                 {recent.map((drawing) => (
-                  <button className="drawing-row" key={drawing.id} onClick={() => navigate(`/editor/${drawing.id}`)}>
+                  <div className="drawing-row" key={drawing.id}>
                     <div className="drawing-thumb"><MiniCanvas elements={drawing.elements} /></div>
-                    <div className="drawing-info"><strong>{drawing.title}</strong><span>{formatDate(drawing.updatedAt)} <i>•</i> Private</span></div>
+                    <button className="drawing-info" onClick={() => navigate(`/editor/${drawing.id}`)}><strong>{drawing.title}</strong><span>{formatDate(drawing.updatedAt)} <i>•</i> Private</span></button>
                     <span className="drawing-count">{drawing.elements.length} objects</span><MoreHorizontal size={18} className="row-more" />
-                  </button>
+                    <div className="drawing-row-actions">
+                      <button className="row-action" onClick={() => void duplicateDrawing(drawing)} aria-label={`Duplicate ${drawing.title}`} title="Duplicate"><Copy size={15} /></button>
+                      <button className="row-action danger" onClick={() => void removeDrawing(drawing)} aria-label={`Delete ${drawing.title}`} title="Delete"><Trash2 size={15} /></button>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -424,6 +471,7 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
   const [notice, setNotice] = useState('')
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null)
   const saveTimer = useRef<number | undefined>(undefined)
+  const mountedRef = useRef(true)
   const pendingSave = useRef<{ elements: readonly ExcalidrawElement[]; appState: Partial<AppState>; files: BinaryFiles } | null>(null)
 
   useEffect(() => {
@@ -439,8 +487,23 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
     }).catch(() => setNotice('Could not restore this drawing.'))
   }, [id])
 
+  useEffect(() => () => {
+    mountedRef.current = false
+  }, [])
+
+  useEffect(() => {
+    apiRef.current?.updateScene({
+      appState: {
+        theme,
+        viewBackgroundColor: theme === 'dark' ? '#0d141c' : '#f7f9fc',
+      },
+      captureUpdate: 'NEVER',
+    })
+  }, [theme])
+
   const persist = useCallback((elements: readonly ExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
     if (!drawing) return
+    setSaveState('saving')
     pendingSave.current = {
       elements,
       appState: {
@@ -458,35 +521,52 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
       const nextSave = pendingSave.current
       pendingSave.current = null
       if (!nextSave) return
-      void saveDrawing({ ...drawing, title, updatedAt: Date.now(), ...nextSave }).then(() => setSaveState('saved')).catch(() => setSaveState('error'))
+      void saveDrawing({ ...drawing, title, updatedAt: Date.now(), ...nextSave }).then(() => {
+        setDrawing((current) => current ? { ...current, title, updatedAt: Date.now(), ...nextSave } : current)
+        if (mountedRef.current) setSaveState('saved')
+      }).catch(() => {
+        if (mountedRef.current) setSaveState('error')
+      })
     }, 500)
   }, [drawing, title])
 
   const exportFile = async (kind: 'png' | 'svg' | 'json') => {
-    if (!apiRef.current) return
-    const elements = apiRef.current.getSceneElements()
-    const appState = apiRef.current.getAppState()
-    const files = apiRef.current.getFiles()
-    if (kind === 'json') {
-      download(new Blob([serializeAsJSON(elements, appState, files, 'local')], { type: 'application/json' }), `${title}.excalidraw`)
-    } else if (kind === 'png') {
-      const blob = await exportToBlob({ elements, appState, files, mimeType: 'image/png', exportPadding: 32 })
-      download(blob, `${title}.png`)
-    } else {
-      const svg = await exportToSvg({ elements, appState, files, exportPadding: 32 })
-      download(new Blob([svg.outerHTML], { type: 'image/svg+xml' }), `${title}.svg`)
+    try {
+      if (!apiRef.current) return
+      const elements = apiRef.current.getSceneElements()
+      const appState = apiRef.current.getAppState()
+      const files = apiRef.current.getFiles()
+      if (kind === 'json') {
+        download(new Blob([serializeAsJSON(elements, appState, files, 'local')], { type: 'application/json' }), `${title}.excalidraw`)
+      } else if (kind === 'png') {
+        const blob = await exportToBlob({ elements, appState, files, mimeType: 'image/png', exportPadding: 32 })
+        download(blob, `${title}.png`)
+      } else {
+        const svg = await exportToSvg({ elements, appState, files, exportPadding: 32 })
+        download(new Blob([svg.outerHTML], { type: 'image/svg+xml' }), `${title}.svg`)
+      }
+      setShowExport(false)
+      setNotice(`${kind.toUpperCase()} export ready`)
+    } catch {
+      setNotice(`Unable to export as ${kind.toUpperCase()}.`)
     }
-    setShowExport(false)
-    setNotice(`${kind.toUpperCase()} export ready`)
   }
 
   const importFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file || !apiRef.current) return
     try {
-      const data = JSON.parse(await file.text()) as { elements?: ExcalidrawElement[]; appState?: Partial<AppState>; files?: BinaryFiles }
-      apiRef.current.updateScene({ elements: data.elements ?? [], appState: data.appState as AppState, captureUpdate: 'IMMEDIATELY' })
-      if (data.files) apiRef.current.addFiles(Object.values(data.files))
+      const data = JSON.parse(await file.text()) as { elements?: unknown; appState?: unknown; files?: unknown }
+      if (!data || !Array.isArray(data.elements)) throw new Error('Invalid drawing elements')
+      const importedAppState = data.appState && typeof data.appState === 'object'
+        ? { ...apiRef.current.getAppState(), ...(data.appState as Partial<AppState>) }
+        : undefined
+      apiRef.current.updateScene({
+        elements: data.elements as ExcalidrawElement[],
+        ...(importedAppState ? { appState: importedAppState } : {}),
+        captureUpdate: 'IMMEDIATELY',
+      })
+      if (data.files && typeof data.files === 'object') apiRef.current.addFiles(Object.values(data.files as BinaryFiles))
       setNotice('Drawing imported')
     } catch {
       setNotice('That file could not be imported.')
@@ -499,12 +579,12 @@ function EditorPage({ id, theme, toggleTheme, navigate }: { id: string; theme: T
   return <div className={`editor-shell ${showChrome ? '' : 'chrome-hidden'}`} data-theme={theme}>
     <h1 className="editor-page-title">SketchDeck Drawing Editor</h1>
     {showChrome && <header className="editor-header">
-      <div className="editor-header-left"><button className="back-button" onClick={() => navigate('/')}><ArrowLeft size={17} /><span>Workspace</span></button><div className="header-divider" /><Brand compact /><div className="title-editor"><input value={title} onChange={(event) => setTitle(event.target.value)} onBlur={() => { if (drawing) void saveDrawing({ ...drawing, title, updatedAt: Date.now() }) }} /><span className={saveState === 'error' ? 'save-status error' : 'save-status'}>{saveState === 'saving' ? 'Saving…' : saveState === 'error' ? 'Save failed' : <><Check size={13} /> Saved locally</>}</span></div></div>
+      <div className="editor-header-left"><button className="back-button" onClick={() => navigate('/')}><ArrowLeft size={17} /><span>Workspace</span></button><div className="header-divider" /><Brand compact /><div className="title-editor"><input value={title} onChange={(event) => setTitle(event.target.value)} onBlur={() => { if (!drawing) return; setSaveState('saving'); void saveDrawing({ ...drawing, title, updatedAt: Date.now() }).then(() => { setDrawing((current) => current ? { ...current, title } : current); setSaveState('saved') }).catch(() => setSaveState('error')) }} /><span className={saveState === 'error' ? 'save-status error' : 'save-status'}>{saveState === 'saving' ? 'Saving…' : saveState === 'error' ? 'Save failed' : <><Check size={13} /> Saved locally</>}</span></div></div>
       <div className="editor-header-right"><button className="editor-action" onClick={() => setShowShortcuts(true)}><Command size={16} /><span>Shortcuts</span></button><ThemeButton theme={theme} toggleTheme={toggleTheme} /><button className="icon-button chrome-button" onClick={() => setShowChrome(false)} aria-label="Hide header and footer" title="Hide header and footer"><EyeOff size={16} /></button><div className="export-wrap"><button className="primary-button export-button" onClick={() => setShowExport((value) => !value)}><Download size={16} /> Export <ChevronDown size={14} /></button>{showExport && <div className="export-menu"><button onClick={() => void exportFile('png')}><FileImage size={16} /> PNG image</button><button onClick={() => void exportFile('svg')}><FileImage size={16} /> SVG vector</button><button onClick={() => void exportFile('json')}><FileJson size={16} /> Excalidraw JSON</button></div>}</div></div>
     </header>}
     <div className="editor-body">
       {!showChrome && <button className="chrome-restore" onClick={() => setShowChrome(true)} aria-label="Show header and footer" title="Show header and footer"><Eye size={16} /></button>}
-      <div className="canvas-wrap"><Excalidraw theme="dark" initialData={{ elements: drawing.elements, appState: { ...drawing.appState, theme: 'dark', viewBackgroundColor: '#0d141c' } as AppState, files: drawing.files }} excalidrawAPI={(api) => { apiRef.current = api }} onChange={(elements, appState, files) => { const selectedId = Object.keys(appState.selectedElementIds ?? {})[0]; setSelectedElement(selectedId ? (elements.find((element) => element.id === selectedId) as ExcalidrawElement | undefined) ?? null : null); persist(elements as readonly ExcalidrawElement[], appState, files) }} name="SketchDeck" UIOptions={{ canvasActions: { export: false, saveToActiveFile: false, loadScene: false, clearCanvas: true, toggleTheme: false, saveAsImage: false }, tools: { image: true } }} /></div>
+      <div className="canvas-wrap"><Excalidraw theme={theme} initialData={{ elements: drawing.elements, appState: { ...drawing.appState, theme, viewBackgroundColor: theme === 'dark' ? '#0d141c' : '#f7f9fc' } as AppState, files: drawing.files }} excalidrawAPI={(api) => { apiRef.current = api }} onChange={(elements, appState, files) => { const selectedId = Object.keys(appState.selectedElementIds ?? {})[0]; setSelectedElement(selectedId ? (elements.find((element) => element.id === selectedId) as ExcalidrawElement | undefined) ?? null : null); persist(elements as readonly ExcalidrawElement[], appState, files) }} name="SketchDeck" UIOptions={{ canvasActions: { export: false, saveToActiveFile: false, loadScene: false, clearCanvas: true, toggleTheme: false, saveAsImage: false }, tools: { image: true } }} /></div>
       <div className="canvas-help">To move canvas, hold mouse wheel or spacebar while dragging, or use the hand tool.</div>
       <aside className="property-panel"><div className="property-panel-header"><span>Inspector</span><span className="inspector-state">{selectedElement ? 'SELECTED' : 'IDLE'}</span></div>{selectedElement ? <div className="inspector-details"><div className="inspector-icon"><WandSparkles size={18} /></div><strong>{selectedElement.type.toUpperCase()}</strong><span className="inspector-id">{selectedElement.id.slice(0, 18)}…</span><div className="inspector-grid"><span>POSITION</span><b>{Math.round(selectedElement.x)}, {Math.round(selectedElement.y)}</b><span>SIZE</span><b>{Math.round(Math.abs(selectedElement.width))} × {Math.round(Math.abs(selectedElement.height))}</b><span>OPACITY</span><b>{selectedElement.opacity}%</b></div></div> : <div className="inspector-empty"><div className="inspector-icon"><WandSparkles size={18} /></div><strong>Shape styling</strong><span>Select an object to inspect its geometry and appearance.</span></div>}<div className="tips-card"><div className="tips-title"><Sparkles size={14} /> Quick tip</div><p>Double-click any shape to add a label. Hold <kbd>Space</kbd> to pan around the canvas.</p></div></aside>
     </div>
