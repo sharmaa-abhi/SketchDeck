@@ -156,6 +156,9 @@ background: var(--panel);
 .editor-shell .save-status { color: #49d9b2; font-size: 8px; }
 .editor-shell .editor-action { margin-right: 4px; color: #7e9ab0; font: 9px 'DM Mono'; }
 .editor-shell .editor-action svg { width: 13px; }
+.inspector-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 5px 9px; border: 1px solid #263747; border-radius: var(--radius-md); color: #7892a6; background: #101923; font: 9px 'DM Mono'; }
+.inspector-toggle:hover, .inspector-toggle.active { color: #20b8f5; border-color: #20b8f5; background: #102d45; }
+.inspector-toggle svg { width: 13px; }
 .editor-shell .icon-button { width: 28px; height: 28px; border-color: #263747; border-radius: var(--radius-md); color: #7892a6; background: #101923; }
 .editor-shell .export-button { min-height: 32px; padding: 7px 10px; border: 1px solid #1eaff0; border-radius: var(--radius-md); color: #02111b; background: #20b8f5; font: 700 9px 'DM Mono'; box-shadow: none; }
 .editor-shell .editor-body { background: #0b121a; }
@@ -170,7 +173,10 @@ background: var(--panel);
 .editor-shell .editor-floating-toolbar .tool-button { width: 28px; height: 28px; }
 .editor-shell .canvas-help { top: 67px; color: #657f93; font-size: 8px; }
 .editor-shell .property-panel { flex-basis: 220px; padding: 14px 12px; border-left-color: #263747; background: #101923; }
+.editor-shell .inspector-popup { position: absolute; top: 52px; right: 12px; z-index: 15; width: min(250px, calc(100vw - 32px)); max-height: calc(100svh - 104px); overflow: auto; border: 1px solid #263747; border-radius: var(--radius-md); box-shadow: 0 18px 48px rgba(0, 0, 0, .4); }
 .editor-shell .property-panel-header { margin-bottom: 38px; color: #d5e5f3; font: 700 11px 'DM Mono'; text-transform: uppercase; }
+.inspector-header-actions { display: flex; align-items: center; gap: 8px; }
+.inspector-header-actions .icon-button { width: 24px; height: 24px; }
 .editor-shell .inspector-empty strong { color: #d8e6f2; font: 700 10px 'DM Mono'; }
 .editor-shell .inspector-empty span { color: #9ab0c6; font-size: 13px; line-height: 1.5; }
 .editor-shell .inspector-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 10px; border-radius: var(--radius-lg); color: #20b8f5; background: #102d58; }
@@ -376,7 +382,7 @@ background: var(--panel);
   .editor-shell .editor-header-right .icon-button { display: none; }
   .editor-shell .title-editor { margin-left: 6px; }
   .editor-shell .title-editor input { width: min(42vw, 170px); }
-  .editor-shell .property-panel { position: absolute; right: 0; bottom: 0; z-index: 8; width: min(246px, 86vw); height: 240px; border-top: 1px solid #253340; }
+  .editor-shell .inspector-popup { top: 48px; right: 10px; width: min(246px, 86vw); max-height: calc(100svh - 70px); }
   .editor-shell .editor-toolbar { display: none; }
 }
 
